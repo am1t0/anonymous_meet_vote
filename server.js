@@ -119,7 +119,18 @@ app.get('/', (_req, res) => {
   <title>Realtime Ratings</title>
   <style>
     :root{font-family: system-ui, sans-serif;}
-    body{margin:0; background:#0f172a; color:#e2e8f0; display:flex; min-height:100vh;}
+   body {
+  margin: 0;
+  background: #0f172a;
+  color: #e2e8f0;
+  display: flex;
+  min-height: 100vh;
+
+  /* Encoded SVG pattern background */
+  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' fill='none' stroke='%232563eb' stroke-width='0.5'%3E%3Ccircle cx='50' cy='50' r='20'/%3E%3Crect x='120' y='20' width='40' height='40' rx='8'/%3E%3Cpolygon points='160,160 180,190 140,190' /%3E%3Cpath d='M20,160 q40,-40 80,0' /%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
     .container{max-width:500px; margin:auto; padding:24px; width:100%;}
     .card{background:#1e293b; border:1px solid #334155; border-radius:12px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,.5)}
     h1{font-size:24px; margin:0 0 8px; text-align:center; color:#f8fafc;}
