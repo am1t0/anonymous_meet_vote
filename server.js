@@ -108,7 +108,7 @@ io.on('connection', (socket) => {
   });
 });
 
-// Serve minimal client UI
+// Serve minimal client UI (Dark + Responsive + Persistent)
 app.get('/', (_req, res) => {
   res.setHeader('Content-Type', 'text/html');
   res.end(`<!doctype html>
@@ -119,23 +119,29 @@ app.get('/', (_req, res) => {
   <title>Realtime Ratings</title>
   <style>
     :root{font-family: system-ui, sans-serif;}
-    body{margin:0; background:#f8fafc; color:#0f172a; display:flex; min-height:100vh;}
+    body{margin:0; background:#0f172a; color:#e2e8f0; display:flex; min-height:100vh;}
     .container{max-width:500px; margin:auto; padding:24px; width:100%;}
-    .card{background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,.05)}
-    h1{font-size:24px; margin:0 0 8px; text-align:center}
-    .muted{color:#64748b; text-align:center}
+    .card{background:#1e293b; border:1px solid #334155; border-radius:12px; padding:20px; box-shadow:0 4px 12px rgba(0,0,0,.5)}
+    h1{font-size:24px; margin:0 0 8px; text-align:center; color:#f8fafc;}
+    .muted{color:#94a3b8; text-align:center}
     .row{display:flex; gap:8px; flex-wrap:wrap; justify-content:center}
-    input[type=text]{flex:1; padding:12px 14px; border-radius:8px; border:1px solid #cbd5e1; font-size:16px}
-    button{padding:10px 14px; border-radius:8px; border:1px solid #cbd5e1; background:#2563eb; color:#fff; font-size:16px; cursor:pointer}
-    button.secondary{background:#e2e8f0; color:#0f172a}
-    .badge{padding:6px 10px; border-radius:6px; background:#f1f5f9; font-weight:600}
+    input[type=text]{flex:1; padding:12px 14px; border-radius:8px; border:1px solid #475569; background:#0f172a; color:#f1f5f9; font-size:16px}
+    button{padding:10px 14px; border-radius:8px; border:none; background:#2563eb; color:#fff; font-size:16px; cursor:pointer; transition:0.2s}
+    button:hover{background:#1d4ed8}
+    button.secondary{background:#475569; color:#f1f5f9}
+    .badge{padding:6px 10px; border-radius:6px; background:#334155; font-weight:600; color:#f8fafc}
     .grid{display:grid; grid-template-columns: repeat(5, 1fr); gap:8px; margin-top:16px}
-    .rating-btn{font-size:18px; padding:14px; border-radius:8px; border:1px solid #cbd5e1; background:#f8fafc; cursor:pointer}
-    .rating-btn.active{background:#2563eb; border-color:#2563eb; color:#fff}
+    .rating-btn{font-size:18px; padding:14px; border-radius:8px; border:1px solid #475569; background:#1e293b; color:#f1f5f9; cursor:pointer; transition:0.2s}
+    .rating-btn.active,.rating-btn:hover{background:#2563eb; border-color:#2563eb; color:#fff}
     .stats{margin-top:16px; text-align:center}
-    .bar{height:10px; background:#e2e8f0; border-radius:999px; overflow:hidden; flex:1}
+    .bar{height:10px; background:#334155; border-radius:999px; overflow:hidden; flex:1}
     .bar > div{height:100%; background:#22c55e}
     .flex{display:flex; gap:8px; align-items:center; margin:4px 0}
+    @media(max-width:600px){
+      .card{padding:16px}
+      .rating-btn{padding:10px; font-size:16px}
+      input[type=text], button{font-size:14px; padding:8px 12px}
+    }
   </style>
 </head>
 <body>
@@ -177,13 +183,13 @@ app.get('/', (_req, res) => {
     let isCreator = false;
     let myRating = 0;
 
-    // Load from sessionStorage
+    // Restore session on reload
     if (sessionStorage.roomCode) {
       socket.emit('join_room', { code: sessionStorage.roomCode }, (res) => {
         if (res && res.ok) {
           currentRoom = res.code;
           myRating = Number(sessionStorage.myRating || 0);
-          isCreator = false;
+          isCreator = sessionStorage.isCreator === "true";
           showRoomUI(currentRoom);
           renderRatingButtons();
         } else {
@@ -249,8 +255,9 @@ app.get('/', (_req, res) => {
         if (!res || !res.ok) return alert('Failed to create room');
         isCreator = true;
         currentRoom = res.code;
-        showRoomUI(currentRoom);
         sessionStorage.roomCode = currentRoom;
+        sessionStorage.isCreator = true;
+        showRoomUI(currentRoom);
         renderRatingButtons();
       });
     };
@@ -263,6 +270,7 @@ app.get('/', (_req, res) => {
         isCreator = false;
         currentRoom = res.code;
         sessionStorage.roomCode = currentRoom;
+        sessionStorage.isCreator = false;
         showRoomUI(currentRoom);
         renderRatingButtons();
       });
